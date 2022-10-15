@@ -6,7 +6,8 @@ import (
 	"path/filepath"
 )
 
-func dirExists(path string) bool {
+func dirExists(paths ...string) bool {
+	path := filepath.Join(paths...)
 	if stat, err := os.Stat(path); !os.IsNotExist(err) && stat.IsDir() {
 		return true
 	}
@@ -21,7 +22,8 @@ func fileExists(filename string) bool {
 	return !info.IsDir()
 }
 
-func fileOrDirExists(path string) bool {
+func fileOrDirExists(paths ...string) bool {
+	path := filepath.Join(paths...)
 	if _, err := os.Stat(path); !os.IsNotExist(err) {
 		return true
 	}
@@ -51,4 +53,16 @@ func createFile(paths ...string) (string, error) {
 	}
 	defer file.Close()
 	return path, nil
+}
+
+func findGitPath(path string) (string, error) {
+	path = filepath.Clean(path)
+	if dirExists(path, ".git") {
+		return filepath.Join(path, ".git"), nil
+	}
+	parent := filepath.Join(path, "..")
+	if parent == path {
+		return path, fmt.Errorf("not inside a git repository")
+	}
+	return findGitPath(parent)
 }

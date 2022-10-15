@@ -16,9 +16,17 @@ type GitRepo struct {
 	confFile string
 }
 
-func NewGitClient(path string) (GitClient, error) {
+func NewGitClient(path string, cmd string) (GitClient, error) {
 	if !dirExists(path) {
 		return nil, fmt.Errorf("%v directory doesn't exist", path)
+	}
+
+	if cmd != InitCmd {
+		var err error
+		path, err = findGitPath(path)
+		if err != nil {
+			return nil, err
+		}
 	}
 	repo := &GitRepo{
 		worktree: path,

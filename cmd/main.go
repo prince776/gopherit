@@ -19,7 +19,7 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	gitClient, err := internal.NewGitClient(pwd)
+	gitClient, err := internal.NewGitClient(pwd, command)
 	if err != nil {
 		fmt.Println("Error: Couldn't start git client:", err)
 		return
