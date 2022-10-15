@@ -6,13 +6,14 @@ import (
 )
 
 type GitClient interface {
-	Init(path string) error
+	Init() error
+	Validate() error
 }
 
 type GitRepo struct {
 	worktree string
 	gitDir   string
-	conf     string
+	confFile string
 }
 
 func NewGitClient(path string) (GitClient, error) {
@@ -23,7 +24,7 @@ func NewGitClient(path string) (GitClient, error) {
 		worktree: path,
 		gitDir:   filepath.Join(path, ".git"),
 	}
-	repo.conf = repo.repoPath("config")
+	repo.confFile = repo.repoPath("config")
 	return repo, nil
 }
 

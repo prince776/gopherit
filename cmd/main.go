@@ -27,12 +27,13 @@ func main() {
 
 	switch command {
 	case internal.InitCmd:
-
-		err = gitClient.Init(pwd)
-		if err != nil {
-			fmt.Println("Error: ", err)
-		}
+		err = gitClient.Init()
+	case internal.ValidateCmd:
+		err = gitClient.Validate()
 	default:
 		fmt.Println("Error: Bad command")
+	}
+	if err != nil {
+		fmt.Println("Error: ", err)
 	}
 }

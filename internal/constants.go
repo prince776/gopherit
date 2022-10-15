@@ -1,6 +1,7 @@
 package internal
 
 const (
-	InitCmd = "init"
-	AddCmd  = "add"
+	InitCmd     = "init"
+	ValidateCmd = "validate"
+	AddCmd      = "add"
 )
