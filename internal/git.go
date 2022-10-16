@@ -8,6 +8,7 @@ import (
 type GitClient interface {
 	Init() error
 	Validate() error
+	CatFile(object string) error
 }
 
 type GitRepo struct {
@@ -17,6 +18,7 @@ type GitRepo struct {
 }
 
 func NewGitClient(path string, cmd string) (GitClient, error) {
+	fmt.Println("Git client initiated at:", path, " with command: ", cmd)
 	if !dirExists(path) {
 		return nil, fmt.Errorf("%v directory doesn't exist", path)
 	}
@@ -27,13 +29,15 @@ func NewGitClient(path string, cmd string) (GitClient, error) {
 		if err != nil {
 			return nil, err
 		}
+		path = filepath.Clean(filepath.Join(path, ".."))
 	}
 	repo := &GitRepo{
 		worktree: path,
 		gitDir:   filepath.Join(path, ".git"),
 	}
 	repo.confFile = repo.repoPath("config")
-	return repo, nil
+	_, err := repo.validateRepo()
+	return repo, err
 }
 
 // get path of file relative to gitDir

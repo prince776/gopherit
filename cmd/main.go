@@ -30,6 +30,8 @@ func main() {
 		err = gitClient.Init()
 	case internal.ValidateCmd:
 		err = gitClient.Validate()
+	case internal.CatfileCmd:
+		err = gitClient.CatFile(os.Args[2])
 	default:
 		fmt.Println("Error: Bad command")
 	}
