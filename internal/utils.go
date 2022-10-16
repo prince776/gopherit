@@ -41,11 +41,10 @@ func createDir(paths ...string) (string, error) {
 
 func createFile(paths ...string) (string, error) {
 	path := filepath.Join(paths...)
-	if len(paths) > 1 {
-		_, err := createDir(paths[0 : len(paths)-1]...)
-		if err != nil {
-			return path, err
-		}
+	dir := filepath.Dir(path)
+	_, err := createDir(dir)
+	if err != nil {
+		return path, err
 	}
 	file, err := os.Create(path)
 	if err != nil {

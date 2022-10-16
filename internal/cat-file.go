@@ -2,8 +2,8 @@ package internal
 
 import "fmt"
 
-func (g *GitRepo) CatFile(object string) error {
-	obj, err := g.readObject(object)
+func (g *GitRepo) CatFile(objectHash string) error {
+	obj, err := g.readObject(objectHash)
 	if err != nil {
 		return err
 	}

@@ -3,6 +3,7 @@ package internal
 import (
 	"bytes"
 	"compress/zlib"
+	"crypto/sha1"
 	"fmt"
 	"os"
 	"strconv"
@@ -28,15 +29,11 @@ func (g *GitRepo) readObject(sha string) (GitObject, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer reader.Close()
+
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(reader)
 	rawData := buf.Bytes()
-	// buf := new(strings.Builder)
-	// _, err = io.Copy(buf, reader)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// rawData := buf.String()
 	spacePos := bytes.Index(rawData, []byte(" "))
 	nullBytePos := bytes.Index(rawData, []byte{byte(0x00)})
 	format := rawData[:spacePos]
@@ -59,6 +56,19 @@ func (g *GitRepo) readObject(sha string) (GitObject, error) {
 		return nil, fmt.Errorf("unsupported format: %v", string(format))
 	}
 	return res, nil
+}
+
+func (g *GitRepo) getWriteObject(obj GitObject) (finalData []byte, sha []byte) {
+	data := obj.Serialize()
+	finalData = append(obj.Format(), []byte(" ")...)
+	finalData = append(finalData, []byte(strconv.Itoa(len(data)))...)
+	finalData = append(finalData, []byte{byte(0x00)}...)
+	finalData = append(finalData, data...)
+
+	hasher := sha1.New()
+	hasher.Write(finalData)
+	sha = hasher.Sum(nil)
+	return
 }
 
 type BlobObject struct {

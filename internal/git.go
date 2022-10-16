@@ -8,7 +8,8 @@ import (
 type GitClient interface {
 	Init() error
 	Validate() error
-	CatFile(object string) error
+	CatFile(objectHash string) error
+	HashOject(filepath string, write bool, objType string) error
 }
 
 type GitRepo struct {
@@ -36,7 +37,10 @@ func NewGitClient(path string, cmd string) (GitClient, error) {
 		gitDir:   filepath.Join(path, ".git"),
 	}
 	repo.confFile = repo.repoPath("config")
-	_, err := repo.validateRepo()
+	var err error
+	if cmd != InitCmd {
+		_, err = repo.validateRepo()
+	}
 	return repo, err
 }
 
